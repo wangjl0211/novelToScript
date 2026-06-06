@@ -1,0 +1,44 @@
+{# 单章元素提取 Prompt #}
+请对以下小说章节进行元素提取，输出 JSON 对象。
+
+## 上下文
+
+- 全书摘要：{{ global_summary }}
+- 已知人物：{{ characters | tojson }}
+{% if previous_summaries %}
+- 前章摘要：
+{% for s in previous_summaries %}
+  - {{ s }}
+{% endfor %}
+{% endif %}
+
+## 当前章节
+
+**第 {{ chapter_index }} 章：{{ chapter_title }}**
+
+{{ chapter_content }}
+
+## 输出要求
+
+```json
+{
+  "summary": "本章摘要（100-200字）",
+  "characters": [
+    {"id": "xxx", "name": "姓名", "aliases": [], "description": "简介"}
+  ],
+  "locations": [
+    {"id": "xxx", "name": "地点名", "description": "描述", "interior": true}
+  ],
+  "time_markers": ["时间线索"],
+  "props": ["关键道具"],
+  "inner_thoughts": [
+    {"character_id": "xxx", "text": "心理活动原文摘要"}
+  ]
+}
+```
+
+## 规则
+
+1. 提取所有出场人物、场景、对话、动作、心理活动
+2. 心理活动记录原文摘要，后续将转化为 action/dialogue/voiceover
+3. 不得改变情节，不得新增角色

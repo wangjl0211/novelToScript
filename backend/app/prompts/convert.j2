@@ -1,0 +1,54 @@
+{# 章节剧本转换 Prompt #}
+你是一位资深影视编剧。请将以下小说章节转换为标准剧本格式，输出 JSON 对象。
+
+## 上下文
+
+- 全书摘要：{{ global_summary }}
+- 人物表：{{ characters | tojson }}
+- 本章元素分析：{{ elements | tojson }}
+
+## 当前章节
+
+**第 {{ chapter_index }} 章：{{ chapter_title }}**
+
+{{ chapter_content }}
+
+## 输出要求
+
+```json
+{
+  "scenes": [
+    {
+      "heading": {
+        "int_ext": "INT 或 EXT 或 INT/EXT",
+        "location": "场景地点",
+        "time_of_day": "日/夜/晨/昏/连续"
+      },
+      "time": "具体时间描述",
+      "cast": ["character_id"],
+      "props": ["道具"],
+      "summary": "场景摘要",
+      "blocks": [
+        {"type": "action", "text": "动作/环境描述"},
+        {"type": "dialogue", "character_id": "xxx", "parenthetical": "（低声）", "lines": ["对白"]},
+        {"type": "voiceover", "character_id": "xxx", "text": "画外音/旁白"},
+        {"type": "transition", "text": "切至"},
+        {"type": "parenthetical", "text": "括号说明"}
+      ]
+    }
+  ]
+}
+```
+
+## 心理活动转化规则
+
+- 可外化为动作的 → type: action
+- 可通过对白表达的 → type: dialogue
+- 无法外化的内心独白 → type: voiceover
+
+## 禁止事项
+
+1. 不得改变情节、结局
+2. 不得新增或删除角色
+3. 对白须符合人物性格
+4. 场景切换须合理，每个场景有明确时空

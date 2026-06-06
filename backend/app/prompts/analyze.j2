@@ -1,0 +1,36 @@
+{# 全书分析 Prompt #}
+请对以下小说进行全书分析，输出 JSON 对象。
+
+## 小说概况（共 {{ chapter_count }} 章）
+
+{{ overview }}
+
+## 输出要求
+
+请输出以下 JSON 结构（不要输出其他内容）：
+
+```json
+{
+  "title": "剧本标题建议",
+  "logline": "一句话故事梗概",
+  "global_summary": "全书故事摘要（200-500字）",
+  "genre": "类型（如：都市、悬疑、爱情）",
+  "characters": [
+    {
+      "id": "小写英文ID",
+      "name": "人物姓名",
+      "aliases": ["别名"],
+      "description": "人物简介",
+      "age": "年龄",
+      "gender": "性别"
+    }
+  ],
+  "relationships": "主要人物关系描述"
+}
+```
+
+## 规则
+
+1. character id 使用小写英文字母和下划线
+2. 不得新增小说中不存在的角色
+3. 保留故事核心情节与情感基调

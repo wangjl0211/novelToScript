@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://noveltoscript.local/schemas/script.schema.json",
+  "title": "NovelToScript Screenplay",
+  "description": "AI 辅助小说转剧本工具 — 剧本 YAML 结构 Schema",
+  "type": "object",
+  "required": ["script"],
+  "additionalProperties": false,
+  "properties": {
+    "script": {
+      "type": "object",
+      "required": ["meta", "characters", "locations", "acts"],
+      "additionalProperties": false,
+      "properties": {
+        "meta": { "$ref": "#/$defs/meta" },
+        "characters": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/character" }
+        },
+        "locations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/location" }
+        },
+        "acts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/act" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "required": ["title", "version", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "author": { "type": "string" },
+        "source_novel": { "type": "string" },
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "genre": { "type": "string" },
+        "logline": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "character": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string" },
+        "age": { "type": "string" },
+        "gender": { "type": "string" }
+      }
+    },
+    "location": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "interior": { "type": "boolean" }
+      }
+    },
+    "act": {
+      "type": "object",
+      "required": ["act_number", "title", "scenes"],
+      "additionalProperties": false,
+      "properties": {
+        "act_number": { "type": "integer", "minimum": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string" },
+        "scenes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/scene" }
+        }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "required": ["scene_id", "heading", "blocks"],
+      "additionalProperties": false,
+      "properties": {
+        "scene_id": { "type": "string", "pattern": "^sc\\d{3,}$" },
+        "chapter_source": { "type": "integer", "minimum": 1 },
+        "heading": { "$ref": "#/$defs/scene_heading" },
+        "location_id": { "type": "string" },
+        "time": { "type": "string" },
+        "weather": { "type": "string" },
+        "cast": { "type": "array", "items": { "type": "string" } },
+        "props": { "type": "array", "items": { "type": "string" } },
+        "summary": { "type": "string" },
+        "blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/block" }
+        }
+      }
+    },
+    "scene_heading": {
+      "type": "object",
+      "required": ["int_ext", "location", "time_of_day"],
+      "additionalProperties": false,
+      "properties": {
+        "int_ext": { "type": "string", "enum": ["INT", "EXT", "INT/EXT"] },
+        "location": { "type": "string", "minLength": 1 },
+        "time_of_day": {
+          "type": "string",
+          "enum": ["日", "夜", "晨", "昏", "连续"]
+        },
+        "display": { "type": "string" }
+      }
+    },
+    "block": {
+      "oneOf": [
+        { "$ref": "#/$defs/block_action" },
+        { "$ref": "#/$defs/block_dialogue" },
+        { "$ref": "#/$defs/block_parenthetical" },
+        { "$ref": "#/$defs/block_transition" },
+        { "$ref": "#/$defs/block_voiceover" },
+        { "$ref": "#/$defs/block_scene_heading" }
+      ]
+    },
+    "block_base": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string" }
+      }
+    },
+    "block_action": {
+      "type": "object",
+      "required": ["type", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "action" },
+        "text": { "type": "string", "minLength": 1 }
+      }
+    },
+    "block_dialogue": {
+      "type": "object",
+      "required": ["type", "character_id", "lines"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "dialogue" },
+        "character_id": { "type": "string" },
+        "parenthetical": { "type": "string" },
+        "lines": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "block_parenthetical": {
+      "type": "object",
+      "required": ["type", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "parenthetical" },
+        "text": { "type": "string", "minLength": 1 }
+      }
+    },
+    "block_transition": {
+      "type": "object",
+      "required": ["type", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "transition" },
+        "text": { "type": "string", "minLength": 1 }
+      }
+    },
+    "block_voiceover": {
+      "type": "object",
+      "required": ["type", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "voiceover" },
+        "character_id": { "type": "string" },
+        "text": { "type": "string", "minLength": 1 }
+      }
+    },
+    "block_scene_heading": {
+      "type": "object",
+      "required": ["type", "heading"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "scene_heading" },
+        "heading": { "$ref": "#/$defs/scene_heading" }
+      }
+    }
+  }
+}
